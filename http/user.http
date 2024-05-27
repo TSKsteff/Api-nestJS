@@ -1,0 +1,42 @@
+GET http://localhost:3000/users
+
+####
+
+GET http://localhost:3000/users/0
+
+####
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "nome": "Ted Akim",
+    "email": "ted@gmail.com",
+    "password": "@Jesus1234"
+}
+
+####
+
+PUT  http://localhost:3000/users/4
+Content-Type: application/json
+
+{
+    "nome": "steff Kerry",
+    "password": "65656565"
+}
+
+
+####
+
+PATCH  http://localhost:3000/users/7
+Content-Type: application/json
+
+{
+   "nome": "steff ",
+    "email": "steff@gmail.com",
+    "password": "@Jesus1098"
+}
+
+####
+
+DELETE http://localhost:3000/users/0

@@ -1,0 +1,47 @@
+//Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "ted@gmail.com",
+    "password": "@Jesus1234"
+}
+
+####
+//ME
+POST http://localhost:3000/auth/me
+
+
+{
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibmFtZSI6IlRlZCBBa2ltIiwiZW1haWwiOiJ0ZWRAZ21haWwuY29tIiwiaWF0IjoxNzExOTc0MjMyLCJleHAiOjE3MTIwNjA2MzIsImF1ZCI6IlVzZXJzIiwiaXNzIjoibG9naW4iLCJzdWIiOiIzIn0.BRb5nlEF9YydGJUWfiGTe7r4TATbjiT6IWZOyTvqzVQ"
+}
+
+####
+//Forget
+POST http://localhost:3000/auth/forget
+Content-Type: application/json
+
+{
+    "email": "ted@gmail.com"
+}
+
+####
+//register
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "email": "ted@gmail.com",
+    "password": "@Jesus1234"
+}
+
+
+####
+//Reset
+POST http://localhost:3000/auth/reset
+Content-Type: application/json
+
+{
+    "password": "@Jesus1234",
+    "token": "1224.24756.12"
+}
