@@ -4,7 +4,7 @@ import { Role } from "src/enums/role.enum";
 export class CreateUserDTO{
 
     @IsString()
-    nome:string;
+    name:string;
     
     
     @IsEmail()
@@ -16,7 +16,7 @@ export class CreateUserDTO{
 
     @IsOptional()
     @IsDateString()
-    birthAt:string;
+    birthdAt:Date;
 
     @IsOptional()
     @IsEnum(Role)

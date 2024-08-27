@@ -1,69 +1,65 @@
 import { Role } from './../enums/role.enum';
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
-import { PrismaService } from "src/prisma/prisma.service";
 import { UpdatePutUserDTO } from "./dto/update-put.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import * as bcrypt from "bcrypt";
+import { Repository } from 'typeorm';
+import { UserEntity } from './entity/entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
 
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        @InjectRepository(UserEntity)
+        private userRepository: Repository<UserEntity>
+    ){}
 
     async create(data: CreateUserDTO){
+        
+        if((await this.userRepository.exists({
+            where: {
+                email: data.email
+            }
+        }))){
+            throw new BadRequestException('O usuario com esse e-mail já existe.');
+        }
 
         data.password =  await bcrypt.hash(data.password, await bcrypt.genSalt());
-
-        return this.prisma.user.create({
-            data
-        });
-            
+        
+        const user =  this.userRepository.create(data);
+        
+        return this.userRepository.save(user);
     }
-
+    
     async list(){
-        return this.prisma.user.findMany(
-            /*where: {
-                email:{
-                    contains: '@gmail.com',
-                }*/
-        );
+     return this.userRepository.find();
     }
 
-    async show(id: number){
-        await this.exists(id);
-        return  this.prisma.user.findUnique({
-            where: {
-                id
-            }
-        });
-    }
 
-    async update(id: number, {nome,email,password, birthAt, role}: UpdatePutUserDTO){
+    async update(id: number, {name,email,password, birthdAt, role}: UpdatePutUserDTO){
     
         await this.exists(id);
 
         password =  await bcrypt.hash(password, await bcrypt.genSalt());
 
-        return this.prisma.user.update({
-            data:{nome,email,password, birthAt: birthAt ? new Date(birthAt) : null, role},
-            where:{
-                id
-            }
-        });
+        await  this.userRepository.update(id,{name,email,password, birthdAt: birthdAt ? new Date(birthdAt) : null, role});
+
+        return this.show(id);
     }
 
-    async updatePartial(id: number, {nome,email,password, birthAt, role}: UpdatePatchUserDTO){
+    async updatePartial(id: number, {name,email,password, birthdAt, role}: UpdatePatchUserDTO){
         
         await this.exists(id);
 
         const data: any={};
 
-        if(birthAt){
-            data.birthAt = new Date(birthAt);
+        if(birthdAt){
+            data.birthAt = new Date(birthdAt);
         }
-        if(nome){
-            data.nome = nome;
+        if(name){
+            data.nome = name;
         }
         if(email){
             data.email = email;
@@ -74,33 +70,26 @@ export class UserService {
         if(role){
             data.role = role;
         }
-        return this.prisma.user.update({
-            data,
-            where:{
-                id
-            }
-        });
+        await  this.userRepository.update(id,data);
+        return this.show(id);
     }
 
     async delete(id: number){
-
        await this.exists(id);
-
-        return this.prisma.user.delete({
+        return this.userRepository.delete({id});
+    }
+    
+    async show(id: number){
+        await this.exists(id);
+        return  this.userRepository.findOneBy({id});
+    }
+    async exists(id: number){
+        if(!(await this.userRepository.exists({
             where: {
                 id
             }
-        });
-    }
-
-async exists(id: number){
-    if(!(await this.prisma.user.count({
-        where: {
-            id
+        }))){
+            throw new NotFoundException('O usuario com esse id não existe.');
         }
-    }))){
-        throw new NotFoundException('O usuario com esse id não existe.');
     }
-}
-
 }
